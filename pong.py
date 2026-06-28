@@ -5,15 +5,15 @@ pygame.init()
 class Ball:
     def __init__(self, x, y, width, height):
         self.rect = pygame.Rect(x,y,width,height)
-        self.dx = 4 * random.choice((1, -1))
-        self.dy = 4 * random.choice((1, -1))
+        self.dx = 267 * random.choice((1, -1))
+        self.dy = 267 * random.choice((1, -1))
         self.bounce_multiplier = 1
         self.spawn_x = x
         self.spawn_y = y
 
-    def update(self):
-        self.rect.x += self.dx * self.bounce_multiplier
-        self.rect.y += self.dy * self.bounce_multiplier
+    def update(self, dt):
+        self.rect.x += self.dx * self.bounce_multiplier * dt
+        self.rect.y += self.dy * self.bounce_multiplier * dt
 
         if self.rect.top <= 0 or self.rect.bottom >= HEIGHT:
             self.dy *= -1
@@ -32,8 +32,8 @@ class Ball:
 
     def reset(self):
         self.rect.x, self.rect.y = self.spawn_x, self.spawn_y
-        self.dx = 4 * random.choice((1, -1))
-        self.dy = 4 * random.choice((1, -1))
+        self.dx = 267 * random.choice((1, -1))
+        self.dy = 267 * random.choice((1, -1))
         self.bounce_multiplier = 1
 
     def draw(self, screen):
@@ -42,7 +42,7 @@ class Ball:
 class Paddle:
     def __init__(self, x, y, color):
         self.rect = pygame.Rect(x, y, WIDTH//32, HEIGHT//6)
-        self.speed = 4
+        self.speed = 267
         self.color = color
 
     def update(self):
@@ -51,11 +51,11 @@ class Paddle:
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
 
-    def move_up(self):
-        self.rect.y -= self.speed
+    def move_up(self, dt):
+        self.rect.y -= self.speed * dt
     
-    def move_down(self):
-        self.rect.y += self.speed
+    def move_down(self, dt):
+        self.rect.y += self.speed * dt
 
 class Game:
     def __init__(self):
@@ -82,23 +82,23 @@ class Game:
                 if event.key == pygame.K_q:
                     self.running = False
     
-    def input(self):
+    def input(self, dt):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
             pygame.draw.rect(self.screen, 'white', (0,0, WIDTH, HEIGHT))
         if keys[pygame.K_UP]:
-            self.player.move_up()
+            self.player.move_up(dt)
         if keys[pygame.K_DOWN]:
-            self.player.move_down()
+            self.player.move_down(dt)
 
-    def update_ai(self):
+    def update_ai(self,dt):
         if self.enemy.rect.centery > self.ball.rect.centery:
-            self.enemy.move_up()
+            self.enemy.move_up(dt)
         else:
-            self.enemy.move_down()
+            self.enemy.move_down(dt)
 
-    def update_objects(self):
-        self.ball.update()
+    def update_objects(self, dt):
+        self.ball.update(dt)
         self.player.update()
         self.enemy.update()
 
@@ -120,17 +120,20 @@ class Game:
             print('player lost')
             self.running = False
 
-    def update(self):
-        self.update_ai()
-        self.update_objects()
+    def update(self, dt):
+        self.update_ai(dt)
+        self.update_objects(dt)
         self.update_score()
         self.check_winner()
 
     def collisions(self):
-        if self.ball.rect.colliderect(self.player.rect):
+        if self.ball.dx < 0 and self.ball.rect.colliderect(self.enemy.rect):
             self.ball.bounce()
-        if self.ball.rect.colliderect(self.enemy.rect):
+            self.ball.rect.left = self.enemy.rect.right
+
+        if self.ball.dx > 0 and self.ball.rect.colliderect(self.player.rect):
             self.ball.bounce()
+            self.ball.rect.right = self.player.rect.left
 
     def draw_score(self):
         player_text = self.font.render(str(self.player_score), False, (255, 255, 255))
@@ -148,12 +151,12 @@ class Game:
     def run(self):
         while self.running:
             # time
-            self.dt = self.clock.tick(self.FPS)/1000
+            dt = self.clock.tick(self.FPS)/1000
             self.screen.fill('black')
 
             self.events()
-            self.input()
-            self.update()
+            self.input(dt)
+            self.update(dt)
             self.collisions()
             self.draw()
     
