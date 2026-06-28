@@ -1,6 +1,5 @@
-import pygame, sys, random
+import pygame, random
 from settings import WIDTH, HEIGHT, WIN_SCORE
-pygame.init()
 
 class Ball:
     def __init__(self, x, y, width, height):
@@ -159,13 +158,14 @@ class Game:
             self.update(dt)
             self.collisions()
             self.draw()
-    
-        pygame.quit()
-        sys.exit()
 
-game = Game()
+def main():
+    pygame.init()
 
-game.run()
+    game = Game()
+    game.run()
 
-pygame.quit()
-sys.exit()
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()

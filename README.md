@@ -1,5 +1,7 @@
 # Pong (Pygame)
 
+![Gameplay](images/gameplay.png)
+
 A simple Pong clone written in Python using Pygame.
 
 This project was created to practice object-oriented programming, game loops, delta time movement, collision detection, and basic game architecture.
