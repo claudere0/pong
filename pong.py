@@ -65,7 +65,7 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH,HEIGHT))
         pygame.display.set_caption("pong")
         self.clock = pygame.time.Clock()
-        self.font = pygame.font.Font(None, 32)
+        self.font = pygame.font.Font(None, 36)
 
         self.ball = Ball((WIDTH-BALL_SIZE)//2, (HEIGHT-BALL_SIZE)//2,BALL_SIZE, BALL_SIZE)
         self.player = Paddle(WIDTH-(WIDTH//16),(HEIGHT-(HEIGHT//6))//2, (0,0,255))
@@ -94,12 +94,13 @@ class Game:
     def update(self):
         self.ball.update()
         self.player.update()
-        self.enemy.update()
 
         if self.enemy.rect.centery > self.ball.rect.centery:
             self.enemy.move_up()
         else:
             self.enemy.move_down()
+        
+        self.enemy.update()
 
         if self.ball.goal() == 'player':
             self.player_score += 1
@@ -126,10 +127,10 @@ class Game:
         self.ball.draw(self.screen)
         self.player.draw(self.screen)
         self.enemy.draw(self.screen)
-        player_text = self.font.render(str(self.player_score), False, (200, 200, 200))
-        enemy_text = self.font.render(str(self.simple_ai_score), False, (200, 200, 200))
-        self.screen.blit(player_text, (WIDTH // 2 + 20, 20))
-        self.screen.blit(enemy_text, (WIDTH // 2 - 40, 20))
+        player_text = self.font.render(str(self.player_score), False, (255, 255, 255))
+        enemy_text = self.font.render(str(self.simple_ai_score), False, (255, 255, 255))
+        self.screen.blit(player_text, (WIDTH // 2 + 16, 16))
+        self.screen.blit(enemy_text, (WIDTH // 2 - 32, 16))
         pygame.display.flip()
 
     def run(self):
