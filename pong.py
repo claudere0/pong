@@ -132,14 +132,17 @@ class Game:
         if self.ball.rect.colliderect(self.enemy.rect):
             self.ball.bounce()
 
-    def draw(self):
-        self.ball.draw(self.screen)
-        self.player.draw(self.screen)
-        self.enemy.draw(self.screen)
+    def draw_score(self):
         player_text = self.font.render(str(self.player_score), False, (255, 255, 255))
         enemy_text = self.font.render(str(self.simple_ai_score), False, (255, 255, 255))
         self.screen.blit(player_text, (WIDTH // 2 + 16, 16))
         self.screen.blit(enemy_text, (WIDTH // 2 - 32, 16))
+
+    def draw(self):
+        self.ball.draw(self.screen)
+        self.player.draw(self.screen)
+        self.enemy.draw(self.screen)
+        self.draw_score()
         pygame.display.flip()
 
     def run(self):
