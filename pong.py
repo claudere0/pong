@@ -102,10 +102,11 @@ class Game:
         
         self.enemy.update()
 
-        if self.ball.goal() == 'player':
+        goal = self.ball.goal()
+        if goal == 'player':
             self.player_score += 1
             self.ball.reset()
-        if self.ball.goal() == 'simple_ai':
+        if goal == 'simple_ai':
             self.simple_ai_score += 1
             self.ball.reset()
 
