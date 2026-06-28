@@ -20,6 +20,8 @@ class Ball:
         self.dx = 4 * random.choice((1, -1))
         self.dy = 4 * random.choice((1, -1))
         self.bounce_multiplier = 1
+        self.spawn_x = x
+        self.spawn_y = y
 
     def update(self):
         self.rect.x += self.dx * self.bounce_multiplier
@@ -40,8 +42,8 @@ class Ball:
         
         return None
     
-    def reset(self, x, y):
-        self.rect.x, self.rect.y = x, y
+    def reset(self):
+        self.rect.x, self.rect.y = self.spawn_x, self.spawn_y
         self.dx = 4 * random.choice((1, -1))
         self.dy = 4 * random.choice((1, -1))
         self.bounce_multiplier = 1
@@ -111,10 +113,10 @@ while running:
 
     if ball.goal() == 'player':
         player_score += 1
-        ball.reset((WIDTH-BALL_SIZE)//2, (HEIGHT-BALL_SIZE)//2)
+        ball.reset()
     if ball.goal() == 'simple_ai':
         simple_ai_score += 1
-        ball.reset((WIDTH-BALL_SIZE)//2, (HEIGHT-BALL_SIZE)//2)
+        ball.reset()
 
     if player_score == 5:
         print('player wins')
