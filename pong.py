@@ -32,7 +32,7 @@ class Ball:
         self.dx *= -1
         self.bounce_multiplier += 0.0625
 
-    def round_result(self):
+    def goal(self):
         if self.rect.left <= 0:
             return "player"
         if self.rect.right >= WIDTH:
@@ -109,10 +109,10 @@ while running:
     enemy.update()
     enemy.simple_ai(ball)
 
-    if ball.round_result() == 'player':
+    if ball.goal() == 'player':
         player_score += 1
         ball.reset((WIDTH-BALL_SIZE)//2, (HEIGHT-BALL_SIZE)//2)
-    if ball.round_result() == 'simple_ai':
+    if ball.goal() == 'simple_ai':
         simple_ai_score += 1
         ball.reset((WIDTH-BALL_SIZE)//2, (HEIGHT-BALL_SIZE)//2)
 
