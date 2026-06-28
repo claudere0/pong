@@ -28,14 +28,9 @@ class Ball:
         if self.rect.top <= 0 or self.rect.bottom >= HEIGHT:
             self.dy *= -1
 
-        # if self.rect.left <= 0 or self.rect.right >= WIDTH:
-        #     self.dx *= -1
-
-    def collisions(self, player, simple_ai):
-        if self.rect.colliderect(player.rect) or self.rect.colliderect(simple_ai.rect):
-            self.dx *= -1
-            self.bounce_multiplier += 0.0625
-        
+    def bounce(self):
+        self.dx *= -1
+        self.bounce_multiplier += 0.0625
 
     def round_result(self):
         if self.rect.left <= 0:
@@ -80,8 +75,6 @@ class Paddle:
     
     def score_count(self, point):
         pass
-
-
 
 ball = Ball((WIDTH-BALL_SIZE)//2, (HEIGHT-BALL_SIZE)//2,BALL_SIZE, BALL_SIZE)
 player = Paddle(WIDTH-(WIDTH//16),(HEIGHT-(HEIGHT//6))//2, (0,0,255))
@@ -132,7 +125,10 @@ while running:
         running = False
 
     # collisions
-    ball.collisions(player, enemy)
+    if ball.rect.colliderect(player.rect):
+        ball.bounce()
+    if ball.rect.colliderect(enemy.rect):
+        ball.bounce()
 
     # draw
     ball.draw(screen)
