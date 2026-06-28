@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, random
 pygame.init()
 
 WIDTH = 512
@@ -15,14 +15,15 @@ simple_ai_score = 0
 BALL_SIZE = 16
 
 class Ball:
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height,):
         self.rect = pygame.Rect(x,y,width,height)
-        self.dx = 4
-        self.dy = -4
+        self.dx = 4 * random.choice((1, -1))
+        self.dy = 4 * random.choice((1, -1))
+        self.bounce_multiplier = 1
 
     def update(self):
-        self.rect.x += self.dx
-        self.rect.y += self.dy
+        self.rect.x += self.dx * self.bounce_multiplier
+        self.rect.y += self.dy * self.bounce_multiplier
 
         if self.rect.top <= 0 or self.rect.bottom >= HEIGHT:
             self.dy *= -1
@@ -31,10 +32,10 @@ class Ball:
         #     self.dx *= -1
 
     def collisions(self, player, simple_ai):
-        if self.rect.colliderect(player.rect):
+        if self.rect.colliderect(player.rect) or self.rect.colliderect(simple_ai.rect):
             self.dx *= -1
-        if self.rect.colliderect(simple_ai.rect):
-            self.dx *= -1
+            self.bounce_multiplier += 0.0625
+        
 
     def round_result(self):
         if self.rect.left <= 0:
@@ -46,6 +47,9 @@ class Ball:
     
     def reset(self, x, y):
         self.rect.x, self.rect.y = x, y
+        self.dx = 4 * random.choice((1, -1))
+        self.dy = 4 * random.choice((1, -1))
+        self.bounce_multiplier = 1
 
     def draw(self, screen):
         pygame.draw.ellipse(screen, 'white', self.rect)
@@ -76,12 +80,6 @@ class Paddle:
     
     def score_count(self, point):
         pass
-
-
-
-
-
-
 
 
 
@@ -132,6 +130,10 @@ while running:
     ball.draw(screen)
     player.draw(screen)
     enemy.draw(screen)
+    player_text = font.render(str(player_score), False, (200, 200, 200))
+    opponent_text = font.render(str(simple_ai_score), False, (200, 200, 200))
+    screen.blit(player_text, (WIDTH // 2 + 20, 20))
+    screen.blit(opponent_text, (WIDTH // 2 - 40, 20))
 
     pygame.display.flip()
 
