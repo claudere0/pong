@@ -9,12 +9,14 @@ screen = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("pong")
 clock = pygame.time.Clock()
 font = pygame.font.Font(None, 32)
+player_score = 0
+simple_ai_score = 0
 
 BALL_SIZE = 16
 
 class Ball:
-    def __init__(self):
-        self.rect = pygame.Rect((WIDTH-BALL_SIZE)//2, (HEIGHT-BALL_SIZE)//2,BALL_SIZE, BALL_SIZE)
+    def __init__(self, x, y, width, height):
+        self.rect = pygame.Rect(x,y,width,height)
         self.dx = 4
         self.dy = -4
 
@@ -25,9 +27,26 @@ class Ball:
         if self.rect.top <= 0 or self.rect.bottom >= HEIGHT:
             self.dy *= -1
 
-        if self.rect.left <= 0 or self.rect.right >= WIDTH:
+        # if self.rect.left <= 0 or self.rect.right >= WIDTH:
+        #     self.dx *= -1
+
+    def collisions(self, player, simple_ai):
+        if self.rect.colliderect(player.rect):
             self.dx *= -1
+        if self.rect.colliderect(simple_ai.rect):
+            self.dx *= -1
+
+    def round_result(self):
+        if self.rect.left <= 0:
+            return "player"
+        if self.rect.right >= WIDTH:
+            return "simple_ai"
+        
+        return None
     
+    def reset(self, x, y):
+        self.rect.x, self.rect.y = x, y
+
     def draw(self, screen):
         pygame.draw.ellipse(screen, 'white', self.rect)
 
@@ -54,6 +73,9 @@ class Paddle:
             self.move('down')
         if self.rect.centery > ball.rect.centery:
             self.move('up')
+    
+    def score_count(self, point):
+        pass
 
 
 
@@ -63,7 +85,7 @@ class Paddle:
 
 
 
-ball = Ball()
+ball = Ball((WIDTH-BALL_SIZE)//2, (HEIGHT-BALL_SIZE)//2,BALL_SIZE, BALL_SIZE)
 player = Paddle(WIDTH-(WIDTH//16),(HEIGHT-(HEIGHT//6))//2, (0,0,255))
 enemy = Paddle(WIDTH//32,(HEIGHT-(HEIGHT//6))//2, (255,0,0))
 
@@ -96,7 +118,15 @@ while running:
     enemy.update()
     enemy.simple_ai(ball)
 
+    if ball.round_result() == 'player':
+        player_score += 1
+        ball.reset((WIDTH-BALL_SIZE)//2, (HEIGHT-BALL_SIZE)//2)
+    if ball.round_result() == 'simple_ai':
+        simple_ai_score += 1
+        ball.reset((WIDTH-BALL_SIZE)//2, (HEIGHT-BALL_SIZE)//2)
+
     # collisions
+    ball.collisions(player, enemy)
 
     # draw
     ball.draw(screen)
