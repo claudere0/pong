@@ -1,5 +1,5 @@
 import pygame, sys, random
-from settings import WIDTH, HEIGHT
+from settings import WIDTH, HEIGHT, WIN_SCORE
 pygame.init()
 
 class Ball:
@@ -91,17 +91,18 @@ class Game:
         if keys[pygame.K_DOWN]:
             self.player.move_down()
 
-    def update(self):
-        self.ball.update()
-        self.player.update()
-
+    def update_ai(self):
         if self.enemy.rect.centery > self.ball.rect.centery:
             self.enemy.move_up()
         else:
             self.enemy.move_down()
-        
+
+    def update_objects(self):
+        self.ball.update()
+        self.player.update()
         self.enemy.update()
 
+    def update_score(self):
         goal = self.ball.goal()
         if goal == 'player':
             self.player_score += 1
@@ -110,13 +111,20 @@ class Game:
             self.simple_ai_score += 1
             self.ball.reset()
 
-        if self.player_score == 5:
+    def check_winner(self):
+        if self.player_score >= WIN_SCORE:
             print('player wins')
             self.running = False
 
-        if self.simple_ai_score == 5:
+        if self.simple_ai_score >= WIN_SCORE:
             print('player lost')
             self.running = False
+
+    def update(self):
+        self.update_ai()
+        self.update_objects()
+        self.update_score()
+        self.check_winner()
 
     def collisions(self):
         if self.ball.rect.colliderect(self.player.rect):
@@ -137,7 +145,7 @@ class Game:
     def run(self):
         while self.running:
             # time
-            dt = self.clock.tick(self.FPS)/1000
+            self.dt = self.clock.tick(self.FPS)/1000
             self.screen.fill('black')
 
             self.events()
