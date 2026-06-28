@@ -63,20 +63,14 @@ class Paddle:
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
 
-    def move(self, direction):
-        if direction == 'up' and self.rect.top > 0:
-            self.rect.y -= self.speed
-        if direction == 'down' and self.rect.bottom < HEIGHT:
-            self.rect.y += self.speed
-
-    def simple_ai(self, ball):
-        if self.rect.centery < ball.rect.centery:
-            self.move('down')
-        if self.rect.centery > ball.rect.centery:
-            self.move('up')
+    def move_up(self):
+        self.rect.y -= self.speed
     
-    def score_count(self, point):
-        pass
+    def move_down(self):
+        self.rect.y += self.speed
+
+    # def score_count(self, point):
+    #     pass
 
 ball = Ball((WIDTH-BALL_SIZE)//2, (HEIGHT-BALL_SIZE)//2,BALL_SIZE, BALL_SIZE)
 player = Paddle(WIDTH-(WIDTH//16),(HEIGHT-(HEIGHT//6))//2, (0,0,255))
@@ -101,15 +95,19 @@ while running:
     if keys[pygame.K_w]:
         pygame.draw.rect(screen, 'white', (0,0, WIDTH, HEIGHT))
     if keys[pygame.K_UP]:
-        player.move('up')
+        player.move_up()
     if keys[pygame.K_DOWN]:
-        player.move('down')
+        player.move_down()
     
     # update
     ball.update()
     player.update()
     enemy.update()
-    enemy.simple_ai(ball)
+
+    if enemy.rect.centery > ball.rect.centery:
+        enemy.move_up()
+    if enemy.rect.centery < ball.rect.centery:
+        enemy.move_down()
 
     if ball.goal() == 'player':
         player_score += 1
