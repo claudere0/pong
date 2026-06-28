@@ -6,7 +6,7 @@ HEIGHT = 384
 FPS = 60
 
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
-pygame.display.set_caption("OH_MY_PONG")
+pygame.display.set_caption("pong")
 clock = pygame.time.Clock()
 font = pygame.font.Font(None, 32)
 
@@ -15,8 +15,8 @@ BALL_SIZE = 16
 class Ball:
     def __init__(self):
         self.rect = pygame.Rect((WIDTH-BALL_SIZE)//2, (HEIGHT-BALL_SIZE)//2,BALL_SIZE, BALL_SIZE)
-        self.dx = 5
-        self.dy = -5
+        self.dx = 4
+        self.dy = -4
 
     def update(self):
         self.rect.x += self.dx
@@ -32,9 +32,27 @@ class Ball:
         pygame.draw.ellipse(screen, 'white', self.rect)
 
 class Paddle:
-    def __init__(self):
-        pass
+    def __init__(self, x, y):
+        self.rect = pygame.Rect(x, y, WIDTH//32, HEIGHT//6)
+        self.speed = 4
+
+    def update(self):
+        self.rect.clamp_ip(pygame.Rect(0, 0, WIDTH, HEIGHT))
     
+    def draw(self, screen):
+        pygame.draw.rect(screen, 'blue', self.rect)
+
+    def move(self, direction):
+        if direction == 'up' and self.rect.top > 0:
+            self.rect.y -= self.speed
+        if direction == 'down' and self.rect.bottom < HEIGHT:
+            self.rect.y += self.speed
+
+    def simple_ai(self, ball):
+        if self.rect.centery < ball.rect.centery:
+            self.move('down')
+        if self.rect.centery > ball.rect.centery:
+            self.move('up')
 
 
 
@@ -45,6 +63,7 @@ class Paddle:
 
 
 ball = Ball()
+player = Paddle(WIDTH-(WIDTH//16),(HEIGHT-(HEIGHT//6))//2)
 
 running = True
 while running:
@@ -64,12 +83,20 @@ while running:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
         pygame.draw.rect(screen, 'white', (0,0, WIDTH, HEIGHT))
+    if keys[pygame.K_UP]:
+        player.move('up')
+    if keys[pygame.K_DOWN]:
+        player.move('down')
+    
     # update
     ball.update()
+    player.update()
+
     # collisions
 
     # draw
     ball.draw(screen)
+    player.draw(screen)
 
     pygame.display.flip()
 
