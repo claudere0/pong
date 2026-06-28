@@ -123,6 +123,14 @@ while running:
         simple_ai_score += 1
         ball.reset((WIDTH-BALL_SIZE)//2, (HEIGHT-BALL_SIZE)//2)
 
+    if player_score == 5:
+        print('player wins')
+        running = False
+
+    if simple_ai_score == 5:
+        print('player lost')
+        running = False
+
     # collisions
     ball.collisions(player, enemy)
 
