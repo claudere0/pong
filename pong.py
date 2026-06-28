@@ -32,15 +32,16 @@ class Ball:
         pygame.draw.ellipse(screen, 'white', self.rect)
 
 class Paddle:
-    def __init__(self, x, y):
+    def __init__(self, x, y, color):
         self.rect = pygame.Rect(x, y, WIDTH//32, HEIGHT//6)
         self.speed = 4
+        self.color = color
 
     def update(self):
         self.rect.clamp_ip(pygame.Rect(0, 0, WIDTH, HEIGHT))
     
     def draw(self, screen):
-        pygame.draw.rect(screen, 'blue', self.rect)
+        pygame.draw.rect(screen, self.color, self.rect)
 
     def move(self, direction):
         if direction == 'up' and self.rect.top > 0:
@@ -63,7 +64,8 @@ class Paddle:
 
 
 ball = Ball()
-player = Paddle(WIDTH-(WIDTH//16),(HEIGHT-(HEIGHT//6))//2)
+player = Paddle(WIDTH-(WIDTH//16),(HEIGHT-(HEIGHT//6))//2, (0,0,255))
+enemy = Paddle(WIDTH//32,(HEIGHT-(HEIGHT//6))//2, (255,0,0))
 
 running = True
 while running:
@@ -91,12 +93,15 @@ while running:
     # update
     ball.update()
     player.update()
+    enemy.update()
+    enemy.simple_ai(ball)
 
     # collisions
 
     # draw
     ball.draw(screen)
     player.draw(screen)
+    enemy.draw(screen)
 
     pygame.display.flip()
 
